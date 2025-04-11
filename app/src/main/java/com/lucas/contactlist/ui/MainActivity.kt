@@ -8,19 +8,22 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.lucas.contactlist.R
 import com.lucas.contactlist.adapter.ContactAdapter
+import com.lucas.contactlist.adapter.ContactRvAdapter
 import com.lucas.contactlist.databinding.ActivityMainBinding
 import com.lucas.contactlist.model.Constant.EXTRA_CONTACT
 import com.lucas.contactlist.model.Constant.EXTRA_VIEW_CONTACT
 import com.lucas.contactlist.model.Contact
 import com.lucas.contactlist.ui.ContactActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnContactClickListener {
     private val amb: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -29,8 +32,8 @@ class MainActivity : AppCompatActivity() {
     private val contactList: MutableList<Contact> = mutableListOf()
 
     // Adapter
-    private val contactAdapter: ContactAdapter by lazy {
-        ContactAdapter(this, contactList)
+    private val contactAdapter: ContactRvAdapter by lazy {
+        ContactRvAdapter(contactList, this)
     }
 
     private lateinit var carl: ActivityResultLauncher<Intent>
@@ -55,33 +58,18 @@ class MainActivity : AppCompatActivity() {
                     val position = contactList.indexOfFirst { it.id == receivedContact.id }
                     if (position == -1) {
                         contactList.add(receivedContact)
+                        contactAdapter.notifyItemInserted(contactList.lastIndex)
                     }
                     else {
                         contactList[position] = receivedContact
+                        contactAdapter.notifyItemChanged(position)
                     }
-                    contactAdapter.notifyDataSetChanged()
                 }
             }
         }
 
-        registerForContextMenu(amb.contactLv)
-
-        amb.contactLv.onItemClickListener = object: AdapterView.OnItemClickListener {
-            override fun onItemClick(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                Intent(this@MainActivity, ContactActivity::class.java).apply {
-                    putExtra(EXTRA_CONTACT, contactList[position])
-                    putExtra(EXTRA_VIEW_CONTACT, true)
-                    startActivity(this)
-                }
-            }
-        }
-
-        amb.contactLv.adapter = contactAdapter
+        amb.contactRv.adapter = contactAdapter
+        amb.contactRv.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -107,29 +95,28 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.context_menu_main, menu)
     }
 
-    override fun onContextItemSelected(item: MenuItem): Boolean {
-        val position = (item.menuInfo as AdapterView.AdapterContextMenuInfo).position
+    override fun onDestroy() {
+        super.onDestroy()
+    }
 
-        return when(item.itemId) {
-            R.id.remove_contact_mi -> {
-                contactList.removeAt(position)
-                contactAdapter.notifyDataSetChanged()
-                Toast.makeText(this, "Contact removed!", Toast.LENGTH_SHORT).show()
-                true
-            }
-            R.id.edit_contact_mi -> {
-                Intent(this, ContactActivity::class.java).apply {
-                    putExtra(EXTRA_CONTACT, contactList[position])
-                    carl.launch(this)
-                }
-                true
-            }
-            else -> { false }
+    override fun onContactClick(position: Int) {
+        Intent(this, ContactActivity::class.java).apply {
+            putExtra(EXTRA_CONTACT, contactList[position])
+            putExtra(EXTRA_VIEW_CONTACT, true)
+            startActivity(this)
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        unregisterForContextMenu(amb.contactLv)
+    override fun onRemoveContactMenuItemClick(position: Int) {
+        contactList.removeAt(position)
+        contactAdapter.notifyItemRemoved(position)
+        Toast.makeText(this, "Contact removed!", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onEditContactMenuItemClick(position: Int) {
+        Intent(this, ContactActivity::class.java).apply {
+            putExtra(EXTRA_CONTACT, contactList[position])
+            carl.launch(this)
+        }
     }
 }
