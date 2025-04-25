@@ -3,25 +3,20 @@ package com.lucas.contactlist.ui
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
-import android.widget.AdapterView
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.lucas.contactlist.R
-import com.lucas.contactlist.adapter.ContactAdapter
 import com.lucas.contactlist.adapter.ContactRvAdapter
+import com.lucas.contactlist.controller.MainController
 import com.lucas.contactlist.databinding.ActivityMainBinding
 import com.lucas.contactlist.model.Constant.EXTRA_CONTACT
 import com.lucas.contactlist.model.Constant.EXTRA_VIEW_CONTACT
 import com.lucas.contactlist.model.Contact
-import com.lucas.contactlist.ui.ContactActivity
 
 class MainActivity : AppCompatActivity(), OnContactClickListener {
     private val amb: ActivityMainBinding by lazy {
@@ -37,6 +32,10 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     private lateinit var carl: ActivityResultLauncher<Intent>
+
+    private val mainController: MainController by lazy {
+        MainController(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,10 +58,12 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
                     if (position == -1) {
                         contactList.add(receivedContact)
                         contactAdapter.notifyItemInserted(contactList.lastIndex)
+                        mainController.insertContact(receivedContact)
                     }
                     else {
                         contactList[position] = receivedContact
                         contactAdapter.notifyItemChanged(position)
+                        mainController.modifyContact(receivedContact)
                     }
                 }
             }
@@ -70,6 +71,8 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
 
         amb.contactRv.adapter = contactAdapter
         amb.contactRv.layoutManager = LinearLayoutManager(this)
+
+        fillContactList()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -87,14 +90,6 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
         }
     }
 
-    override fun onCreateContextMenu(
-        menu: ContextMenu?,
-        v: View?,
-        menuInfo: ContextMenu.ContextMenuInfo?
-    ) {
-        menuInflater.inflate(R.menu.context_menu_main, menu)
-    }
-
     override fun onDestroy() {
         super.onDestroy()
     }
@@ -108,6 +103,7 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     override fun onRemoveContactMenuItemClick(position: Int) {
+        mainController.removeContact(contactList[position].id!!)
         contactList.removeAt(position)
         contactAdapter.notifyItemRemoved(position)
         Toast.makeText(this, "Contact removed!", Toast.LENGTH_SHORT).show()
@@ -118,5 +114,13 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
             putExtra(EXTRA_CONTACT, contactList[position])
             carl.launch(this)
         }
+    }
+
+    private fun fillContactList() {
+        contactList.clear()
+        Thread {
+            contactList.addAll( mainController.getContacts())
+            contactAdapter.notifyDataSetChanged()
+        }.start()
     }
 }
