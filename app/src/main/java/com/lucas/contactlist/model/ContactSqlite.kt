@@ -84,10 +84,10 @@ class ContactSqlite(context: Context): ContactDao {
         arrayOf(contact.id.toString())
     )
 
-    override fun deleteContact(id: Int): Int = contactDatabase.delete(
+    override fun deleteContact(contact: Contact): Int = contactDatabase.delete(
         CONTACT_TABLE,
         "$ID_COLUMN = ?",
-        arrayOf(id.toString())
+        arrayOf(contact.id.toString())
     )
 
     private fun Contact.toContentValues() = ContentValues().apply {

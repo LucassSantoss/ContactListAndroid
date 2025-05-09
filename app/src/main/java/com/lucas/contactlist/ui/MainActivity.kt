@@ -103,7 +103,7 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
     }
 
     override fun onRemoveContactMenuItemClick(position: Int) {
-        mainController.removeContact(contactList[position].id!!)
+        mainController.removeContact(contactList[position])
         contactList.removeAt(position)
         contactAdapter.notifyItemRemoved(position)
         Toast.makeText(this, "Contact removed!", Toast.LENGTH_SHORT).show()
