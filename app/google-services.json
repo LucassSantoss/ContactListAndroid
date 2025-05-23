@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1077092882878",
+    "project_id": "contactlist-3037916",
+    "storage_bucket": "contactlist-3037916.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077092882878:android:1071fe9ebdcd73ef2801ef",
+        "android_client_info": {
+          "package_name": "com.lucas.contactlist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-VIQEfnyxuM87gHs-SmpsH5vK6z9Ic4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
