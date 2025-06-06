@@ -10,4 +10,11 @@
     <string name="contact_list">Contact list</string>
     <string name="remove_contact">remove contact</string>
     <string name="edit_contact">edit contact</string>
+    <string name="password">Password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="sign_out">Sign out</string>
 </resources>

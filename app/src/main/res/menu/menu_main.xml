@@ -7,5 +7,11 @@
     app:showAsAction="always"
     android:icon="@drawable/ic_add"
 />
+    <item
+        android:id="@+id/sign_out_mi"
+        android:title="@string/sign_out"
+        app:showAsAction="never"
+        />
+
 
 </menu>

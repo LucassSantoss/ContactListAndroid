@@ -13,6 +13,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.lucas.contactlist.R
 import com.lucas.contactlist.adapter.ContactRvAdapter
 import com.lucas.contactlist.controller.MainController
@@ -119,6 +121,11 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
                 carl.launch(Intent(this, ContactActivity::class.java))
                 true
             }
+            R.id.sign_out_mi -> {
+                Firebase.auth.signOut()
+                finish()
+                true
+            }
             else -> { false }
         }
     }
@@ -143,5 +150,10 @@ class MainActivity : AppCompatActivity(), OnContactClickListener {
             putExtra(EXTRA_CONTACT, contactList[position])
             carl.launch(this)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (Firebase.auth.currentUser == null) finish()
     }
 }
