@@ -69,4 +69,23 @@
         app:layout_constraintTop_toBottomOf="@id/sign_up_bt"
     />
 
+    <View
+        android:id="@+id/separator_vw"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#c0c0c0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/reset_password_bt"
+    />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_sign_in_bt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/separator_vw"
+    />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
